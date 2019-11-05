@@ -9,7 +9,7 @@ body, html{
 body{
   font-family: sans-serif;
   padding: 50px;
-  background: linear-gradient(45deg, #e176, #e1e9) center center no-repeat;
+  background: linear-gradient(45deg, #176, #1e9) center center no-repeat;
   line-height: 1.4;
 }
 
