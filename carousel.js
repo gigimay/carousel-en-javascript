@@ -7,6 +7,7 @@ class Carousel {
         slidesVisible: 1
       }, options)
       let children = [].slice.call(element.children);
+      this.isMobile = true;
       this.currentItem = 0;
       this.root = this.createDivWithClass('carousel');
       this.container = this.createDivWithClass('carousel__container');
@@ -22,12 +23,14 @@ class Carousel {
       this.setStyle();
       this.createNavigation();
       this.moveCallbacks.forEach(callBack => callBack(0));
+      this.onWindowResize();
+      window.addEventListener('resize', this.onWindowResize.bind(this))
   }
 
     setStyle (){
-      let ratio = this.items.length / this.options.slidesVisible;
+      let ratio = this.items.length / this.slidesVisible;
       this.container.style.width = (ratio * 100) + "%";
-      this.items.forEach(item => item.style.width = ((100 / this.options.slidesVisible) / ratio) + "%");
+      this.items.forEach(item => item.style.width = ((100 / this.slidesVisible) / ratio) + "%");
     }
 
     createNavigation(){
@@ -44,7 +47,7 @@ class Carousel {
           prevButton.classList.remove('carousel__prev--hidden');
         }
 
-        if(this.items[this.currentItem + this.options.slidesVisible] === undefined){
+        if(this.items[this.currentItem + this.slidesVisible] === undefined){
           nextButton.classList.add('carousel__next--hidden');
         }else{
           nextButton.classList.remove('carousel__next--hidden');
@@ -53,11 +56,11 @@ class Carousel {
     }
 
     next(){
-      this.gotoItem(this.currentItem + this.options.slidesToScroll);
+      this.gotoItem(this.currentItem + this.slidesToScroll);
     }
 
     prev(){
-      this.gotoItem(this.currentItem - this.options.slidesToScroll);
+      this.gotoItem(this.currentItem - this.slidesToScroll);
     }
 
     gotoItem(index){
@@ -74,12 +77,30 @@ class Carousel {
 
     onMove(callBack){
       this.moveCallbacks.push(callBack);
+
+    }
+
+    onWindowResize (){
+      let mobile = window.innerWidth < 480;
+      if(mobile !== this.isMobile){
+        this.isMobile = mobile;
+        this.setStyle();
+        this.moveCallbacks.forEach(callBack => callBack(this.currentItem));
+      }
     }
 
     createDivWithClass(className) {
      let div = document.createElement('div');
      div.setAttribute('class', className);
      return div
+   }
+
+   get slidesToScroll (){
+     return this.isMobile ? 1 : this.options.slidesToScroll
+   }
+
+   get slidesVisible(){
+     return this.isMobile ? 1 : this.options.slidesVisible
    }
 }
 
